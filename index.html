@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ตารางดุรูส มัฎีฟะฮ์ ชัยค์ อิสมาอีล</title>
+<title>ตารางดุรูสตาลักกี</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,7 +75,27 @@ a.btn.main{background:#1f9d57;color:#fff}
 .notice{margin-top:20px;font-size:12px;line-height:1.7;color:var(--muted);background:var(--note);border:1px solid var(--noteb);padding:13px;border-radius:12px}
 .notice a{color:inherit}
 @media(max-width:700px){.fields{grid-template-columns:1fr}h1{font-size:23px}.top{flex-direction:column}.time{width:100%;display:flex;justify-content:center;gap:8px;align-items:baseline}.time b{display:inline}}
-
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:12px;padding:12px}
+.tab.active{border-color:var(--p2);background:var(--soft);color:var(--p)}
+.cat{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
+.cat summary{cursor:pointer;padding:16px 18px;font-weight:700;font-size:17px;list-style:none}
+.cat summary::-webkit-details-marker{display:none}
+.cat summary small{display:block;color:var(--muted);font-weight:400;font-size:13px;margin-top:2px}
+.cat[open] summary{border-bottom:1px solid var(--line)}
+.steps{padding:12px 18px 18px;margin:0;list-style:none;counter-reset:s}
+.step{position:relative;padding:10px 0 10px 46px;counter-increment:s}
+.step::before{content:counter(s);position:absolute;left:0;top:12px;width:32px;height:32px;border-radius:50%;
+  background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+:root[data-theme="dark"] .step::before{color:#06130d}
+.step:not(:last-child)::after{content:"";position:absolute;left:15px;top:46px;bottom:-10px;width:2px;background:var(--line)}
+.step .ar{font-size:17px;font-weight:600}
+.step .thn{color:var(--muted);font-size:14px}
+.lv{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--chipt);margin-inline-start:6px}
+.find{margin-top:6px;font-size:13px;padding:6px 12px;background:var(--soft);color:var(--p)}
+.sub{font-weight:700;font-size:13px;color:var(--muted);margin:14px 0 4px}
+.plain{margin:0;padding:0 0 0 18px;line-height:2}
+.plain .n{color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -84,6 +104,13 @@ a.btn.main{background:#1f9d57;color:#fff}
     <h1>📚 ดุรูส</h1>
     <p>ค้นหาคาบเรียน</p>
   </header>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-view="schedule">📅 ตารางเรียน</button>
+    <button class="tab" data-view="method">🧭 منهجية التعلم</button>
+  </div>
+
+  <div id="viewSchedule">
 
   <section class="box">
     <label for="q">ค้นหา (ชื่อวิชา / หนังสือ / ครู — ไทยหรืออาหรับ)</label>
@@ -124,6 +151,8 @@ a.btn.main{background:#1f9d57;color:#fff}
           <option value="pondok">فندق الدراسة</option>
           <option value="nusantara">ساحة نوسنتارا - Sahah Nusantara</option>
           <option value="addariyah">الساحة الدارية - Sahah Addariyah</option>
+          <option value="ashraf">مسجد الأشراف - المقطم - القاهرة</option>
+          <option value="bayt">مؤسسة البيت المحمدي للتصوف</option>
         </select></div>
       <div><label for="teacher">ครู</label>
         <select id="teacher"><option value="all">ทั้งหมด</option></select></div>
@@ -156,7 +185,11 @@ a.btn.main{background:#1f9d57;color:#fff}
 
   <div class="summary" id="summary"></div>
   <div class="results" id="results"></div>
+  </div>
 
+  <div id="viewMethod" hidden>
+    <div id="methodList"></div>
+  </div>
   <div class="notice">
     ⚠️ <b>หมายเหตุ</b><br>
     • ข้อมูลรวบรวมจากโปสเตอร์ของมัฎีฟะฮ์ อาจมีการเปลี่ยนแปลง ควรสอบถามยืนยันก่อนเดินทาง<br>
@@ -188,7 +221,9 @@ const VENUES = {
   lajnah: {ar:"لجنة الطلبة الفطانيين بمصر لإحياء التراث والدراسات العليا"},
   pondok: {ar:"فندق الدراسة"},
   nusantara: {ar:"ساحة نوسنتارا", en:"Sahah Nusantara"},
-  addariyah: {ar:"الساحة الدارية", en:"Sahah Addariyah"}
+  addariyah: {ar:"الساحة الدارية", en:"Sahah Addariyah"},
+  ashraf: {ar:"مسجد الأشراف - المقطم - القاهرة"},
+  bayt: {ar:"مؤسسة البيت المحمدي للتصوف"}
 
 };
 const classes = [
@@ -584,6 +619,7 @@ const classes = [
   alias:"jawharat al tawhid jauharat tawhid bajuri baijuri aqidah อะกีดะฮ์ เตาหีด ญูฮะเราะฮ์ บาญูรี",
   prayer:true,
   source:"https://www.facebook.com/share/p/1H653HPwcW/" },
+
 { date:"2026-10-30", time:"17:30",
   title:"قراءة وشرح كتاب الخريدة البهية لأبي البركات سيدي أحمد الدردير", titleTh:"อ่านและอธิบายหนังสือ อัลคอรีดะฮ์ อัลบะฮิยยะฮ์ ของอบูลบะเราะกาต ซีดี อะห์มัด อัดดัรดีร (อะกีดะฮ์)",
   teacher:"محمود عبد الفتاح", teacherTh:"มะห์มูด อับดุลฟะตาห์",
@@ -591,37 +627,33 @@ const classes = [
   alias:"kharida bahiyya kharidah bahiyyah dardir aqidah อะกีดะฮ์ ดัรดีร คอรีดะฮ์",
   prayer:true,
   source:"https://www.facebook.com/share/p/1H653HPwcW/" },
-  { date:"2026-10-29", time:"13:00",
-  title:"قراءة وشرح كتاب نور اليقين في سيرة سيد المرسلين ﷺ", titleTh:"อ่านและอธิบายหนังสือ นูรุลยะกีน ว่าด้วยชีวประวัติท่านนบีผู้เป็นเจ้านายของเหล่าเราะสูล (สีเราะฮ์)",
-  teacher:"محمد الصادق", teacherTh:"มุฮัมมัด อัศศอดิก",
-  venue:"mosque", note:"", noteTh:"",
-  alias:"nur al yaqin nur yaqin seerah sirah สีเราะฮ์ ชีวประวัติท่านนบี นูรุลยะกีน",
-  prayer:true,
-  source:"https://www.facebook.com/share/p/1F1AvwSMKQ/" },
 
-{ date:"2026-10-29", time:"16:05",
-  title:"قراءة وشرح كتاب اللباب في شرح الكتاب", titleTh:"อ่านและอธิบายหนังสือ อัลลุบาบ ฟี ชัรหิลกิตาบ (ฟิกฮ์)",
-  teacher:"د. إسماعيل محمد عبد الحي", teacherTh:"ดร.อิสมาอีล มุฮัมมัด อับดุลหัยย์",
-  venue:"mosque", note:"", noteTh:"",
-  alias:"lubab fi sharh al kitab al lubab fiqh hanafi ฟิกฮ์ ฮะนะฟี ลุบาบ",
-  prayer:true,
-  source:"https://www.facebook.com/share/p/1F1AvwSMKQ/" },
+  { date:"2026-10-29", time:"بعد صلاة الظهر",
+  title:"قراءة وشرح كتاب نور اليقين في سيرة سيد المرسلين ﷺ",
+  teacher:"الشيخ محمد الصادق",
+  venue:"mosque", note:"مباشرة",
+  alias:"نور اليقين السيرة النبوية سيرة سيد المرسلين",
+  source:"https://www.facebook.com/share/p/1Cmx9vu8to/" },
+{ date:"2026-10-29", time:"بعد صلاة العصر",
+  title:"قراءة وشرح كتاب اللباب في شرح الكتاب",
+  teacher:"د. إسماعيل محمد عبد الحي",
+  venue:"mosque", note:"مباشرة",
+  alias:"اللباب في شرح الكتاب الفقه الحنفي",
+  source:"https://www.facebook.com/share/p/1Cmx9vu8to/" },
 
-{ date:"2026-10-29", time:"16:05",
-  title:"مقرأة القرآن الكريم وشرح السيرة النبوية المحمدية للأطفال", titleTh:"มุกเราะอะฮ์อ่านอัลกุรอานและอธิบายสีเราะฮ์ท่านนบีสำหรับเด็ก (อัลกุรอาน/สีเราะฮ์)",
-  teacher:"محمد صبري", teacherTh:"มุฮัมมัด ศุบรี",
-  venue:"mosque", note:"", noteTh:"",
-  alias:"seerah sirah quran children kids สีเราะฮ์ ชีวประวัติท่านนบี เด็ก อัลกุรอาน",
-  prayer:true,
-  source:"https://www.facebook.com/share/p/1F1AvwSMKQ/" },
+{ date:"2026-10-29", time:"بعد صلاة العصر",
+  title:"مقرأة القرآن الكريم وشرح السيرة النبوية المحمدية للأطفال",
+  teacher:"المعلم محمد صبري",
+  venue:"mosque", note:"مباشرة",
+  alias:"مقرأة القرآن الكريم السيرة النبوية الأطفال",
+  source:"https://www.facebook.com/share/p/1Cmx9vu8to/" },
 
-{ date:"2026-10-29", time:"16:05",
-  title:"قراءة وشرح كتاب شرح ابن عقيل على ألفية ابن مالك", titleTh:"อ่านและอธิบายหนังสือ ชัรหฺอิบนุอะกีล อะลา อัลฟียะฮ์ อิบนิมาลิก (นะฮู)",
-  teacher:"د. هاني عبد الصادق", teacherTh:"ดร.ฮานี อับดุลศอดิก",
-  venue:"women", note:"", noteTh:"",
-  alias:"ibn aqil alfiyyah ibn malik alfiyya nahw nahu นะฮู ไวยากรณ์อาหรับ อัลฟียะฮ์ อิบนุอะกีล",
-  prayer:true,
-  source:"https://www.facebook.com/share/p/1F1AvwSMKQ/" },
+{ date:"2026-10-29", time:"بعد صلاة العصر",
+  title:"قراءة وشرح كتاب شرح ابن عقيل على ألفية ابن مالك",
+  teacher:"د. هاني عبد الصادق",
+  venue:"women", note:"مباشرة",
+  alias:"شرح ابن عقيل ألفية ابن مالك النحو",
+  source:"https://www.facebook.com/share/p/1Cmx9vu8to/" },
 
 { date:"2026-10-29", time:"18:00",
   title:"قراءة وشرح كتاب معين الحصيف على علم التصريف", titleTh:"อ่านและอธิบายหนังสือ มุอีนุลหะซีฟ อะลา อิลมิตตัศรีฟ (ศ็อรฟ์)",
@@ -736,17 +768,17 @@ const classes = [
   alias:"kanz al-saada kanz al-sa'adah adhkar duaa ahmad ibn idris saleh al-jaafari كنز السعادة والدعوات المستجابة أحمد بن إدريس الجعفري",
   prayer:true,
   source:"https://www.facebook.com/share/p/1Mkoav9hZ9/" },
-  { date:"2026-11-05", time:"15:05",
+  { date:"2026-11-05", time:"بعد صلاة العصر",
   title:"شرح كتاب الشفا بتعريف حقوق المصطفى",
   teacher:"يوسف سفاني",
   venue:"dah", note:"",
-  alias:"shifa qadi iyad seerah shamail al-shifa bi-tarif huquq al-mustafa الشفا القاضي عياض السيرة الشمائل",
+  alias:"الشفا القاضي عياض السيرة الشمائل",
   source:"https://www.facebook.com/share/p/1MUTJQKnQR/" },
 { date:"2026-11-05", time:"18:30",
   title:"شرح كتاب الأشباه و النظائر",
   teacher:"أحمد الهجين",
   venue:"dah", note:"",
-  alias:"ashbah wal nazair suyuti fiqh shafii qawaid fiqhiyyah الأشباه والنظائر السيوطي القواعد الفقهية فقه شافعي",
+  alias:"الأشباه والنظائر السيوطي القواعد الفقهية فقه شافعي",
   source:"https://www.facebook.com/share/p/1MUTJQKnQR/" },
   { date:"2026-11-04", time:"18:00",
   title:"شرح كتاب أوضح المسالك شرح ألفية ابن مالك",
@@ -946,26 +978,29 @@ const classes = [
   title:"الرسالة لابن أبي زيد القيرواني",
   teacher:"أ.د. فتحي الفقي",
   venue:"azhar", note:"",
-  alias:"risala ibn abi zayd al-qayrawani fiqh maliki fathi al-faqi الرسالة ابن أبي زيد القيرواني فقه مالكي",
+  alias:"الرسالة ابن أبي زيد القيرواني فقه مالكي",
   source:"https://www.facebook.com/share/p/19i3qZVEV5/" },
 { date:"2026-10-29", time:"09:00",
   title:"صحيح الإمام مسلم بشرح النووي كتاب البر والصلة والأدب",
   teacher:"أ.د. نهلة الصعيدي",
   venue:"azhar", note:"",
-  alias:"sahih muslim sharh al-nawawi kitab al-birr wal-sila wal-adab hadith nahla al-saidi صحيح مسلم شرح النووي كتاب البر والصلة والأدب الحديث",
+  alias:"صحيح مسلم شرح النووي كتاب البر والصلة والأدب الحديث",
+  skip:["2026-11-05"],
   source:"https://www.facebook.com/share/p/19i3qZVEV5/" },
 { date:"2026-10-29", time:"11:00",
   title:"المواقف للإيجي النصيحة الكافية للشيخ زروق",
   teacher:"أ.د. حسن الشافعي",
   venue:"azhar", note:"",
-  alias:"mawaqif iji nasiha kafiya zarruq aqidah kalam tasawwuf hassan al-shafii المواقف الإيجي النصيحة الكافية زروق علم الكلام التصوف",
+  alias:"المواقف الإيجي النصيحة الكافية زروق علم الكلام التصوف",
+  prayer:true,
   source:"https://www.facebook.com/share/p/19i3qZVEV5/" },
-{ date:"2026-10-29", time:"13:00",
+{ date:"2026-10-29", time:"بعد صلاة الظهر",
   title:"الحفيدة للإمام السنوسي",
   teacher:"أ.د. حبيب الله حسن",
-  venue:"azhar", note:"",
-  alias:"hafida sanusi aqidah habibullah hasan الحفيدة السنوسي العقيدة",
-  source:"https://www.facebook.com/share/p/19i3qZVEV5/" },
+  venue:"azhar", note:"الرواق العباسي",
+  alias:"الحفيدة السنوسي العقيدة",
+  skip:["2026-11-05"],
+  source:"https://www.facebook.com/share/p/1MSHB7Zeph/" },
   { date:"2026-10-26", time:"13:00",
   title:"شرح الزرقاني على موطأ الإمام مالك",
   teacher:"أ.د. محمد السيد سلطان",
@@ -1272,18 +1307,18 @@ const classes = [
   alias:"hashiyah sharqawi matn jawharat al tawhid jauharah tauhid aqidah pondok darrosah",
   source:"https://www.facebook.com/share/p/1CAEsBVyfo/", status:"cancelled" },
 
-  { date:"2026-11-04", time:"13:30",
+  { date:"2026-11-04", time:"12:00",
   title:"الياقوت النفيس في مذهب ابن إدريس، نور السجية في حل ألفاظ الآجرومية",
   teacher:"الفاضل بابا عبد القادر الفطاني الأزهري",
   venue:"nusantara", note:"الحضور للرجال والنساء",
-  alias:"yaqut al nafis madhhab ibn idris nur al sajiyyah ajurrumiyyah nahw fiqh shafii sahah nusantara ฟิกฮ์ นะฮู ยากูตุนนะฟีส นูรุสสะญียะฮ์ อาญุรรูมียะฮ์ ساحة نوسنتارا الياقوت النفيس نور السجية الآجرومية",
+  alias:"ساحة نوسنتارا الياقوت النفيس نور السجية الآجرومية",
   source:"https://www.facebook.com/share/p/1HGscSCj4N/" },
 
-  { date:"2026-11-05", time:"13:30",
+  { date:"2026-11-05", time:"12:00",
   title:"الياقوت النفيس في مذهب ابن إدريس، نور السجية في حل ألفاظ الآجرومية",
   teacher:"الفاضل بابا عبد القادر الفطاني الأزهري",
   venue:"nusantara", note:"الحضور للرجال والنساء",
-  alias:"yaqut al nafis madhhab ibn idris nur al sajiyyah ajurrumiyyah nahw fiqh shafii sahah nusantara ฟิกฮ์ นะฮู ยากูตุนนะฟีส นูรุสสะญียะฮ์ อาญุรรูมียะฮ์ ساحة نوسنتارا الياقوت النفيس نور السجية الآجرومية",
+  alias:"ساحة نوسنتارا الياقوت النفيس نور السجية الآجرومية",
   source:"https://www.facebook.com/share/p/1HGscSCj4N/" },
 
   { date:"2026-11-02", time:"12:00",
@@ -1386,6 +1421,141 @@ const classes = [
   prayer:true,
   source:"https://www.facebook.com/share/p/1CVrbyuhVo/" },
 
+{ date:"2026-11-05", time:"بعد صلاة الفجر إلى ما بعد الشروق بساعة",
+  title:"أوراد الصباح، مسند الإمام أحمد بن حنبل، كتاب الجامع المختار للصلوات المحمدية لسيدي محمد المختار الوزاني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"أوراد الصباح أذكار الأوراد مسند الإمام أحمد بن حنبل الحديث المسند الجامع المختار الصلوات المحمدية محمد المختار الوزاني الصلاة على النبي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-06", time:"بعد صلاة الفجر إلى ما بعد الشروق بساعة",
+  title:"أوراد الصباح، مسند الإمام أحمد بن حنبل، كتاب الجامع المختار للصلوات المحمدية لسيدي محمد المختار الوزاني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"أوراد الصباح أذكار الأوراد مسند الإمام أحمد بن حنبل الحديث المسند الجامع المختار الصلوات المحمدية محمد المختار الوزاني الصلاة على النبي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-07", time:"بعد صلاة الفجر إلى ما بعد الشروق بساعة",
+  title:"أوراد الصباح، مسند الإمام أحمد بن حنبل، كتاب الجامع المختار للصلوات المحمدية لسيدي محمد المختار الوزاني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"أوراد الصباح أذكار الأوراد مسند الإمام أحمد بن حنبل الحديث المسند الجامع المختار الصلوات المحمدية محمد المختار الوزاني الصلاة على النبي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-08", time:"بعد صلاة الفجر إلى ما بعد الشروق بساعة",
+  title:"أوراد الصباح، مسند الإمام أحمد بن حنبل، كتاب الجامع المختار للصلوات المحمدية لسيدي محمد المختار الوزاني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"أوراد الصباح أذكار الأوراد مسند الإمام أحمد بن حنبل الحديث المسند الجامع المختار الصلوات المحمدية محمد المختار الوزاني الصلاة على النبي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-09", time:"بعد صلاة الفجر إلى ما بعد الشروق بساعة",
+  title:"أوراد الصباح، مسند الإمام أحمد بن حنبل، كتاب الجامع المختار للصلوات المحمدية لسيدي محمد المختار الوزاني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"أوراد الصباح أذكار الأوراد مسند الإمام أحمد بن حنبل الحديث المسند الجامع المختار الصلوات المحمدية محمد المختار الوزاني الصلاة على النبي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-10", time:"بعد صلاة الفجر إلى ما بعد الشروق بساعة",
+  title:"أوراد الصباح، مسند الإمام أحمد بن حنبل، كتاب الجامع المختار للصلوات المحمدية لسيدي محمد المختار الوزاني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"أوراد الصباح أذكار الأوراد مسند الإمام أحمد بن حنبل الحديث المسند الجامع المختار الصلوات المحمدية محمد المختار الوزاني الصلاة على النبي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-11", time:"بعد صلاة الفجر إلى ما بعد الشروق بساعة",
+  title:"أوراد الصباح، مسند الإمام أحمد بن حنبل، كتاب الجامع المختار للصلوات المحمدية لسيدي محمد المختار الوزاني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"أوراد الصباح أذكار الأوراد مسند الإمام أحمد بن حنبل الحديث المسند الجامع المختار الصلوات المحمدية محمد المختار الوزاني الصلاة على النبي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-06", time:"من صلاة الجمعة حتى صلاة العصر",
+  title:"خطبة الجمعة، الحضرة، المديح النبوي، الأسئلة، يسر البيان قراءة في كتاب التبيان في آداب حملة القرآن للإمام النووي شرح وتعليق أ.د. يسري جبر، ميزان الاعتدال لحفظ الدين والأحوال للشيخ عباس السيد فاضل الحسني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"خطبة الجمعة خطبة صلاة الجمعة الحضرة الذكر التصوف المديح النبوي المدائح الإنشاد الأسئلة أسئلة وأجوبة يسر البيان التبيان في آداب حملة القرآن النووي آداب حملة القرآن ميزان الاعتدال حفظ الدين والأحوال عباس السيد فاضل الحسني",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+  { date:"2026-11-07", time:"بعد صلاة العشاء",
+  title:"سنن الإمام الدارقطني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"سنن الدارقطني الحديث الإمام الدارقطني",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-08", time:"بعد صلاة العشاء",
+  title:"مختصر الفتوحات المكية للإمام الشعراني",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"مختصر الفتوحات المكية الشعراني ابن عربي التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-05", time:"بعد صلاة العشاء",
+  title:"إرشاد البرية إلى بعض معاني الحكم العطائية للدكتور يسري جبر",
+  teacher:"أ.د. يسري جبر",
+  venue:"ashraf", note:"",
+  alias:"إرشاد البرية الحكم العطائية ابن عطاء الله السكندري التصوف",
+  source:"https://www.facebook.com/share/p/14wbroEah4U/" },
+
+{ date:"2026-11-04", time:"بعد صلاة الظهر",
+  title:"مجالس شرح كتاب قطر الندى وبل الصدى في علم النحو",
+  teacher:"الشيخ ياسر مَدْيَن",
+  venue:"bayt", note:"مباشرة، الحضور متاح للجميع",
+  alias:"قطر الندى وبل الصدى النحو ابن هشام ياسر مدين",
+  source:"https://www.facebook.com/share/p/1DnvapJANa/" },
+
+{ date:"2026-11-04", time:"14:00",
+  title:"مجالس شرح كتاب بداية الهدية للإمام الغزالي",
+  teacher:"الشيخ حسني أبوحبيب",
+  venue:"bayt", note:"الحضور متاح للجميع",
+  alias:"بداية الهداية الغزالي التصوف حسني أبوحبيب",
+  source:"https://www.facebook.com/share/p/1DnvapJANa/" },
+
+{ date:"2026-11-04", time:"بعد صلاة العصر",
+  title:"شرح كتاب وسائل الوصول إلى شمائل الرسول ﷺ للإمام النبهاني",
+  teacher:"الشيخ السيد شلبي",
+  venue:"bayt", note:"الحضور متاح للجميع",
+  alias:"وسائل الوصول إلى شمائل الرسول النبهاني الشمائل السيرة النبوية السيد شلبي",
+  source:"https://www.facebook.com/share/p/1DnvapJANa/" },
+
+  { date:"2026-11-03", time:"18:30",
+  title:"مجالس شرح كتاب فتح العلام بشرح الإعلام في أحاديث الأحكام لشيخ الإسلام زكريا الأنصاري",
+  teacher:"د. أحمد ممدوح",
+  venue:"bayt", note:"الدرس سيُعقد في المسجد",
+  alias:"فتح العلام بشرح الإعلام أحاديث الأحكام زكريا الأنصاري الحديث أحمد ممدوح",
+  source:"https://www.facebook.com/share/p/19zyb4D165/" },
+
+  { date:"2026-11-02", time:"بعد صلاة العصر",
+  title:"شرح كتاب شذور الذهب في معرفة كلام العرب للعلامة ابن هشام في علم النحو",
+  teacher:"أ.د. فتحي حجازي",
+  venue:"bayt", note:"مباشرة، الحضور متاح للجميع",
+  alias:"شذور الذهب في معرفة كلام العرب ابن هشام النحو فتحي حجازي",
+  source:"https://www.facebook.com/share/p/1Ds4n6oWQ9/" },
+
+  { date:"2026-10-24", time:"11:00",
+  title:"مجالس شرح كتاب الكفاية في معرفة أصول علم الرواية للإمام الخطيب البغدادي في علوم الحديث الشريف",
+  teacher:"د. أيمن الحجار",
+  venue:"bayt", note:"الحضور متاح للجميع",
+  alias:"الكفاية في معرفة أصول علم الرواية الخطيب البغدادي علوم الحديث مصطلح الحديث أيمن الحجار",
+  prayer:true,
+  source:"https://www.facebook.com/share/p/1A1L9g6Wd6/" },
+
+  { date:"2026-09-06", time:"18:30",
+  title:"شرح كتاب نقاية العلوم للإمام جلال الدين السيوطي",
+  teacher:"أ.د. إبراهيم الهدهد",
+  venue:"bayt", note:"الحضور متاح للجميع، ويوجد مكان خاص بالسيدات",
+  alias:"نقاية العلوم جلال الدين السيوطي أصول الفقه العلوم إبراهيم الهدهد",
+  prayer:true,
+  source:"https://www.facebook.com/share/p/1DwmESCGPc/" },
+
+{ date:"2026-10-10", time:"بعد صلاة الظهر",
+  title:"مجالس شرح كتاب الإكليل شرح مختصر خليل في الفقه المالكي للعلامة محمد الأمير",
+  teacher:"أ.د. عطية مصطفى",
+  venue:"bayt", note:"مباشرة، الدعوة عامة لجميع طلاب العلم",
+  alias:"الإكليل شرح مختصر خليل الفقه المالكي محمد الأمير عطية مصطفى",
+  source:"https://www.facebook.com/share/p/1CPat7tJ6G/" },
+
 ];
 
 const CONTACT_WA = "201019104721";
@@ -1414,9 +1584,14 @@ function fmtDate(d){
   return new Date(d+"T00:00:00").toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 }
 function slotOf(t){
-  const h = parseInt(t.split(":")[0],10);
-  return h < 12 ? "morning" : h < 15 ? "noon" : "after";
+  const s = String(t);
+  if (/الفجر|الضحى/.test(s)) return "morning";
+  if (/الظهر/.test(s)) return "noon";
+  if (/العصر|المغرب|العشاء/.test(s)) return "after";
+  const h = parseInt(s.split(":")[0],10);
+  return isNaN(h) ? "after" : h < 12 ? "morning" : h < 15 ? "noon" : "after";
 }
+
 const SLOT_TH = {morning:"ช่วงเช้า", noon:"ซุฮร์", after:"บ่าย/เย็น"};
 const WEEKS_AHEAD = 8;
 function addDays(d,n){
@@ -1425,7 +1600,9 @@ function addDays(d,n){
   return x.toISOString().slice(0,10);
 }
 const DST_END = "2026-10-30"; // วันแรกที่อียิปต์ใช้เวลาฤดูหนาว
+
 const minusHour = t => {
+  if (!/^\d{1,2}:\d{2}$/.test(t)) return t;
   const [h,m] = t.split(":").map(Number);
   return String((h+23)%24).padStart(2,"0") + ":" + String(m).padStart(2,"0");
 };
@@ -1477,6 +1654,170 @@ $("weekday").addEventListener("change",()=>{
 
 $("q").addEventListener("input",search);
 
+/* ===== منهجية التعلم — ที่มา: برنامج عملي للارتقاء بمستوى طالب العلم الشرعي (ص 103–162)
+b = ลำดับเรียน [ต้น, กลาง, สูง] | m = ท่องจำ | r = อ่านเสริม
+รายการเป็นชื่อตำรา หรือ [ชื่อ, หมายเหตุ] / q = คำค้นสำหรับปุ่ม "ดูในตาราง" (ไม่ใส่ = ตัดจากชื่อเอง) */
+const L = (lv,...a)=>a.map(x=>Array.isArray(x)?{ar:x[0],note:x[1],lv}:{ar:x,lv});
+const T="ต้น", M="กลาง", H="สูง";
+const METHOD = [
+ {icon:"📘", cat:"علم النحو", th:"ไวยากรณ์อาหรับ",
+  b:[...L(T,"التحفة السنية على الآجرومية","تنقيح الأزهرية","الدروس النحوية","كشف النقاب عن مخدرات ملحة الإعراب"),
+     ...L(M,"شرح قطر الندى وبل الصدى","موصل الطلاب إلى قواعد الإعراب","الجمل في النحو","المقرب لابن عصفور","شرح شذور الذهب","شرح المكودي على ألفية ابن مالك"),
+     ...L(H,"النحو الوافي","شرح ابن عقيل على ألفية ابن مالك","أوضح المسالك إلى ألفية ابن مالك","مغني اللبيب عن كتب الأعاريب","شرح متن الكافية")],
+  m:["المقدمة الآجرومية","الدرة البهية في نظم الآجرومية","ملحة الإعراب","المنظومة الشبراوية في القواعد النحوية","متن ألفية ابن مالك","السبك العجيب في نظم مغني اللبيب"],
+  r:["حاشية الحامدي على شرح الكفراوي على الآجرومية","حاشية الشمني على شرح الدماميني على مغني اللبيب","حاشية الدسوقي على مغني اللبيب","حاشية الصبان على شرح الأشموني على الألفية","شرح المفصل لابن يعيش"]},
+
+ {icon:"🔤", cat:"علم الصرف", th:"ตัศรีฟ/ศ็อรฟ์",
+  b:[...L(T,"هداية الطالب (قسم الصرف)","عنوان الظرف في فن الصرف"),
+     ...L(M,"شذا العرف في فن الصرف","شرح تصريف العزي"),
+     ...L(H,"شرح لامية الأفعال","شرح شافية ابن الحاجب للجاربردي","الممتع في التصريف لابن عصفور")],
+  m:["نيل المنى بنظم قواعد البنا","متن التصريف العزي","متن لامية الأفعال"],
+  r:["كتاب التصريف","المنصف","شرح الشافية للاستراباذي","شرح ابن الناظم على لامية الأفعال"]},
+
+ {icon:"🎨", cat:"علم البلاغة", th:"วาทศาสตร์ (บะลาเฆาะฮ์)",
+  b:[...L(T,"موجز البلاغة","البلاغة الواضحة","حلية اللب المصون بشرح الجوهر المكنون"),
+     ...L(M,"المنهاج الواضح في البلاغة","جواهر البلاغة","شرح عقود الجمان"),
+     ...L(H,"بغية الإيضاح شرح التلخيص لعبد المتعال الصعيدي","المطول على تلخيص المفتاح","دلائل الإعجاز")],
+  m:["الجوهر المكنون في الثلاثة الفنون","مئة المعاني والبيان","عقود الجمان في علم المعاني والبيان"],
+  r:["حاشية الشريف الجرجاني على المطول","أسرار البلاغة","حاشية عبدالحكيم السيالكوتي على المطول"]},
+
+ {icon:"🎼", cat:"علم العروض", th:"ฉันทลักษณ์กวี",
+  b:[...L(T,"اللباب في العروض","متن الكافي في علمي العروض والقوافي"),
+     ...L(M,"ميزان الذهب في صناعة شعر العرب","الكافي في علمي العروض والقوافي"),
+     ...L(H,"الإرشاد الشافي على متن الكافي","العيون الغامزة على خبايا الرامزة")],
+  m:["متن الكافي في علمي العروض والقوافي","الكافية الشافية في العروض والقافية","المقصد الجليل في علم الخليل"],
+  r:["القسطاس في علم العروض","المعجم المفصل في العروض والقوافي","القوافي"]},
+
+ {icon:"🔎", cat:"علم فقه اللغة", th:"ภาษาศาสตร์อาหรับ",
+  b:[...L("","دراسات في فقه اللغة / فقه اللغة","المزهر في علوم اللغة وأنواعها","المدخل إلى تقويم اللسان","نظم مثلث قطرب","المثلث لابن السيد البطليوسي","إكمال الإعلام في تثليث الكلام")],
+  m:[], r:["الصاحبي في فقه اللغة","الخصائص","فقه اللغة وسر العربية"]},
+
+ {icon:"📜", cat:"علم الأدب العربي", th:"วรรณกรรมอาหรับ",
+  b:[...L(T,"شرح المعلقات السبع للزوزني","الاقتضاب في شرح أدب الكتاب"),
+     ...L(M,"رغبة الآمل في شرح الكامل","شرح ديوان ذي الرمة","شرح ديوان الحماسة"),
+     ...L(H,"الأمالي للقالي","البيان والتبيين")],
+  m:["المعلقات العشر","ديوان الحماسة"],
+  r:["طبقات فحول الشعراء","الأغاني","شرح دواوين الشعراء الستة الجاهليين","خزانة الأدب"]},
+
+ {icon:"🧱", cat:"علم الوضع", th:"วิชาอัลวัฎอ์",
+  b:[...L(T,"خلاصة علم الوضع"),...L(M,"شرح السمرقندي على رسالة الوضع"),...L(H,"حاشية الدسوقي على شرح السمرقندي على الرسالة الوضعية")],
+  m:["لذة السمع بنظم رسالة الوضع"], r:[]},
+
+ {icon:"✍️", cat:"علم الإملاء والترقيم", th:"อักขรวิธี",
+  b:[], m:[], r:["قواعد الإملاء","الإملاء والترقيم في الكتابة العربية","علامات الترقيم"]},
+
+ {icon:"🧩", cat:"علم المنطق", th:"ตรรกศาสตร์ (มันติก)",
+  b:[...L(T,"إيضاح المبهم من شرح السلم","شرح الملوي على السلم","المطلع على متن إيساغوجي"),
+     ...L(M,"شرح الخبيصي على تهذيب السعد","حاشية البيجوري على مختصر السنوسي"),
+     ...L(H,"تحرير القواعد المنطقية في شرح الرسالة الشمسية","معيار العلم","حاشية العطار على شرح الخبيصي على تهذيب السعد")],
+  m:["متن السلم المنورق","متن إيساغوجي","نظم الرسالة الشمسية"],
+  r:["حاشية السيد الشريف على تحرير القواعد المنطقية","تلخيص منطق أرسطو"]},
+
+ {icon:"🗣️", cat:"علم أدب البحث والمناظرة", th:"มารยาทการค้นคว้าและโต้แย้ง",
+  b:[...L(T,"رسالة الآداب"),...L(M,"شرح الرشيدية على الرسالة الشريفية"),
+     ...L(H,"شرح الولدية في أدب البحث","كمال المحاضرة في آداب البحث والمناظرة")],
+  m:["نتيجة الآداب"], r:[]},
+
+ {icon:"🗂️", cat:"علم المقولات", th:"หมวดหมู่ทั้งสิบ",
+  b:[...L(T,"رسالة في ضبط المقولات","مدلولات المقولات"),...L(M,"الجواهر المنتظمات في عقود المقولات"),...L(H,"حاشية العدوي على الجواهر المنتظمات")],
+  m:["نظم السجاعي"], r:[]},
+
+ {icon:"🕋", cat:"علم الكلام (التوحيد)", th:"หลักศรัทธา (อะกีดะฮ์)",
+  b:[...L(T,"شرح العقباوي على العقيدة التوحيدية","شرح أم البراهين","شرح الخريدة",["نخبة اللآلي بشرح بدء الأمالي","على طريقة الماتريدية"],["خير القلائد بشرح جواهر العقائد","على طريقة الماتريدية"]),
+     ...L(M,"شرح السنوسية الكبرى","شرح العقائد النسفية","تحفة المريد على جوهرة التوحيد",["إشارات المرام من عبارات الإمام","على طريقة الماتريدية"]),
+     ...L(H,"الاقتصاد في الاعتقاد","نشر الطوالع","شرح المقاصد","شرح المواقف",["تبصرة الأدلة","على طريقة الماتريدية"])],
+  m:["الخريدة البهية","العقائد النسفية","جوهرة التوحيد","بدء الأمالي"],
+  r:["أبكار الأفكار في أصول الدين","مناهج الأدلة في عقائد الملة","الإرشاد إلى قواطع الأدلة في أصول الاعتقاد","مقالات الإسلاميين واختلاف المصلين","الفصل في الملل والأهواء والنحل"]},
+
+ {icon:"🎙️", cat:"علم التجويد", th:"ตัจญ์วีด",
+  b:[...L("","فتح الأقفال شرح تحفة الأطفال","الدقائق المحكمة بشرح المقدمة")],
+  m:["تحفة الأطفال","المقدمة الجزرية"], r:[]},
+
+ {icon:"📖", cat:"علم القرآت", th:"กิรออาต",
+  b:[...L("","شرح الشاطبية","شرح الدرة","شرح طيبة النشر لابن الناظم","إتحاف فضلاء البشر بالقراءات الأربعة عشر")],
+  m:["وجه التهاني وحرز الأماني","الدرة المضية"], r:[]},
+
+ {icon:"📗", cat:"علم الفقه الحنفي", th:"ฟิกฮ์ฮะนะฟี",
+  b:[...L(T,"نور الإيضاح","مختصر القدوري"),...L(M,"اللباب شرح الكتاب","تبيين الحقائق شرح كنز الدقائق"),...L(H,"شرح فتح القدير","رد المحتار على الدر المختار")],
+  m:[], r:[]},
+
+ {icon:"📙", cat:"علم الفقه المالكي", th:"ฟิกฮ์มาลิกี",
+  b:[...L(T,"خلاصة الجواهر الزكية على متن العشماوية","الدر الثمين والمورد المعين"),
+     ...L(M,"الشرح الصغير على أقرب المسالك","كفاية الطالب الرباني شرح رسالة ابن أبي زيد القيرواني"),
+     ...L(H,"الشرح الكبير على مختصر خليل","شرح منح الجليل على مختصر العلامة خليل")],
+  m:["المرشد المعين بالضروري من علوم الدين"], r:[]},
+
+ {icon:"⚖️", cat:"علم الفقه الشافعي", th:"ฟิกฮ์ชาฟิอี",
+  b:[...L(T,"فتح القريب المجيب","المنهاج القويم شرح المقدمة الحضرمية"),
+     ...L(M,"غاية البيان شرح زبد ابن رسلان","الإقناع في حل ألفاظ أبي شجاع"),
+     ...L(H,"نهاية المحتاج شرح المنهاج","تحفة المحتاج شرح المنهاج")],
+  m:["نظم الزبد"], r:[]},
+
+ {icon:"📕", cat:"علم الفقه الحنبلي", th:"ฟิกฮ์ฮัมบาลี",
+  b:[...L(T,"دليل الطالب لنيل المطالب","الروض المربع"),...L(M,"المبدع شرح المقنع","الكافي في فقه ابن حنبل"),...L(H,"شرح منتهى الإرادات","كشاف القناع")],
+  m:[], r:[]},
+
+ {icon:"🧭", cat:"علم القواعد الفقهية", th:"กฎเกณฑ์ฟิกฮ์",
+  b:[...L("","القواعد الفقهية","الأشباه والنظائر في قواعد الشافعية","الأشباه والنظائر (لابن نجيم الحنفي)")],
+  m:[], r:[]},
+
+ {icon:"📐", cat:"علم أصول الفقه", th:"หลักนิติศาสตร์ (อุศูลุลฟิกฮ์) — ตามแนวญุมฮูร",
+  b:[...L(T,"تقريب الوصول إلى علم الأصول","شرح المحلي على الورقات"),
+     ...L(M,"شرح المحلي على جمع الجوامع","نهاية السول شرح منهاج الأصول"),
+     ...L(H,"بيان المختصر","المستصفى في أصول الفقه","التمهيد في تخريج الفروع على الأصول")],
+  m:["نظم الورقات"],
+  r:[["خلاصة الأفكار شرح مختصر المنار","على طريقة الأحناف"],["كنز الوصول إلى معرفة الأصول","على طريقة الأحناف"],["فواتح الرحموت بشرح مسلم الثبوت","على طريقة الأحناف"]]},
+
+ {icon:"🌿", cat:"علم مصطلح الحديث", th:"วิชาศัพท์หะดีษ",
+  b:[...L(T,"شرح البيقونية","نزهة النظر شرح نخبة الفكر"),...L(M,"تدريب الراوي شرح تقريب النووي","الباعث الحثيث شرح اختصار علوم الحديث"),...L(H,"فتح المغيث للسخاوي")],
+  m:["البيقونية","ألفية الحديث"], r:[]},
+
+ {icon:"💚", cat:"علم التصوف", th:"ตะเศาวุฟ",
+  b:[...L(T,"بداية الهداية","إعانة المتوجه المسكين إلى طريق الفتح والتمكين"),
+     ...L(M,"الرسالة القشيرية","إيقاظ الهمم في شرح الحكم"),
+     ...L(H,"إحياء علوم الدين","شرح قواعد التصوف","شرح المباحث الأصلية")],
+  m:["متن المباحث الأصلية"], r:[]},
+
+ {icon:"📖", cat:"علوم القرآن", th:"วิชาอัลกุรอาน",
+  b:[...L("","علوم القرآن (نور الدين عتر)","مناهل العرفان في علوم القرآن","الإتقان في علوم القرآن","البرهان في علوم القرآن")],
+  m:["منظومة الزمزمي في أصول التفسير"], r:[]}
+];
+
+const nm = x => typeof x==="string" ? {ar:x} : x;
+const qOf = b => b.q || b.ar.replace(/\(.*?\)/g,"").replace(/^(شرح|حاشية)\s+/,"").trim().split(/\s+/).slice(0,2).join(" ");
+const li = (b,num) => `
+    <li class="${num?"step":""}">
+      <div class="ar" dir="auto">${esc(b.ar)}${b.lv?`<span class="lv">${esc(b.lv)}</span>`:""}</div>
+      ${b.note?`<div class="thn">${esc(b.note)}</div>`:""}
+      <button class="find" data-q="${esc(qOf(b))}">🔍 ดูในตารางเรียน</button>
+    </li>`;
+const plain = a => `<ul class="plain">${a.map(x=>{const b=nm(x);return `<li dir="auto">${esc(b.ar)}${b.note?` <span class="n">(${esc(b.note)})</span>`:""}</li>`}).join("")}</ul>`;
+
+function renderMethod(){
+  $("methodList").innerHTML = METHOD.map((m,i)=>`
+<details class="cat"${i===0?" open":""}>
+  <summary>${m.icon} <span dir="auto">${esc(m.cat)}</span> — ${esc(m.th)}
+    <small>${m.b.length?m.b.length+" เล่มตามลำดับ":""}${m.m.length?` · ท่องจำ ${m.m.length}`:""}${m.r.length?` · อ่านเสริม ${m.r.length}`:""}</small></summary>
+  <div style="padding:12px 18px 18px">
+    ${m.b.length?`<ol class="steps" style="padding:0">${m.b.map(b=>li(b,true)).join("")}</ol>`:""}
+    ${m.m.length?`<div class="sub">📌 متون للحفظ (ท่องจำ)</div>${plain(m.m)}`:""}
+    ${m.r.length?`<div class="sub">📚 للمطالعة (อ่านเสริม)</div>${plain(m.r)}`:""}
+  </div>
+</details>`).join("");
+}
+
+const TIME_ORDER = t => {
+  const s = String(t);
+  if (/^\d/.test(s)) return s.padStart(5,"0");
+  if (/الفجر/.test(s)) return "05:00";
+  if (/الضحى/.test(s)) return "09:00";
+  if (/الظهر/.test(s)) return "12:30";
+  if (/العصر/.test(s)) return "15:30";
+  if (/المغرب/.test(s)) return "18:00";
+  if (/العشاء/.test(s)) return "19:30";
+  return "99:99";
+};
+
 function search(){
   const today = todayStr(), q = norm($("q").value);
   const slot = $("slot").value, venue = $("venue").value, teacher = $("teacher").value;
@@ -1503,8 +1844,7 @@ function search(){
       return q.split(" ").every(w=>hay.includes(w));
     });
   }
-  data.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
-
+data.sort((a,b)=>a.date.localeCompare(b.date)||TIME_ORDER(a.time).localeCompare(TIME_ORDER(b.time)));
   $("summary").textContent = `พบ ${data.length} คาบเรียน`;
   const out = $("results");
   if(!data.length){
@@ -1549,6 +1889,24 @@ function resetAll(){
   syncChips();
   search();
 }
+
+function switchView(v){
+  $("viewSchedule").hidden = v!=="schedule";
+  $("viewMethod").hidden = v!=="method";
+  document.querySelectorAll("#tabs .tab").forEach(t=>t.classList.toggle("active",t.dataset.view===v));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("#tabs .tab").forEach(t=>t.addEventListener("click",()=>switchView(t.dataset.view)));
+$("methodList").addEventListener("click",e=>{
+  const b = e.target.closest(".find"); if(!b) return;
+  resetAll();
+  $("q").value = b.dataset.q;
+  switchView("schedule");
+  search();
+});
+renderMethod();
+search();
+
 search();
 </script>
 </body>
