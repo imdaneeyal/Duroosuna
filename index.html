@@ -134,13 +134,13 @@ a.btn.main{background:#1f9d57;color:#fff}
       <div><label for="venue">สถานที่</label>
         <select id="venue">
           <option value="all">ทั้งหมด</option>
-          <option value="new">مقر المضيفة الجديد</option>
-          <option value="old">مقر المضيفة القديم</option>
+          <option value="new">مقر المضيفة الجديد - مضيفة الشيخ إسماعيل صادق العدوي</option>
+          <option value="old">مقر المضيفة القديم - مضيفة الشيخ إسماعيل صادق العدوي</option>
           <option value="main">مضيفة الشيخ إسماعيل صادق العدوي</option>
           <option value="mosque">مسجد الإمام الجعفري بالدراسة</option>
-          <option value="women">مصلى السيدات</option>
+          <option value="women">مصلى السيدات - مسجد الإمام الجعفري بالدراسة</option>
           <option value="dah">مضيفة و ساحة الشيخ سعيد عمران الدح بالدراسة</option>
-          <option value="ahbab">ملتقى الأحباب</option>
+          <option value="ahbab">ملتقى الأحباب - بيت طلبة باهانج، أول السابع، مدينة نصر</option>
           <option value="azhar">الجامع الأزهر</option>
           <option value="naeem">روضة النعيم - Rawdhat Alnaeem</option>
           <option value="jawi">Pusat Pengajian Ruwaq Jawi</option>
@@ -195,9 +195,6 @@ a.btn.main{background:#1f9d57;color:#fff}
   <div class="notice">
     ⚠️ <b>หมายเหตุ</b><br>
     • ข้อมูลรวบรวมจากโปสเตอร์ของมัฎีฟะฮ์ อาจมีการเปลี่ยนแปลง ควรสอบถามยืนยันก่อนเดินทาง<br>
-    • ที่อยู่: หน้ามหาวิทยาลัยอัลอัซฮัร สาขาการเรียน ใกล้มัสญิดอิมามฮุซัยน์และมัสญิดอัลอัซฮัร<br>
-    • สอบถามผ่านวอตส์แอป: <a href="https://wa.me/201019104721"><b>01019104721</b></a><br>
-    • คาบ "เปิดรับทุกคน" เป็นตารางประจำสัปดาห์ในวันและเวลาเดิม จะงดสอนเมื่อมีประกาศ<br>
     🗓️ ข้อมูลอัปเดตล่าสุด: 6 พ.ย. 2569
   </div>
 </div>
@@ -207,13 +204,13 @@ a.btn.main{background:#1f9d57;color:#fff}
 venue: "new" | "old" | "main" | "mosque" | "women" | "dah" | "ahbab" | "azhar" | "naeem" | "jawi" | "salam" | "kpkm"| "mansyiah" | "lajnah",
   alias: คำค้นภาษาไทย/อังกฤษเพิ่มเติม */
 const VENUES = {
-  new: {ar:"مقر المضيفة الجديد"},
-  old: {ar:"مقر المضيفة القديم"},
+  new: {ar:"مقر المضيفة الجديد - مضيفة الشيخ إسماعيل صادق العدوي"},
+  old: {ar:"مقر المضيفة القديم - مضيفة الشيخ إسماعيل صادق العدوي"},
   main: {ar:"مضيفة الشيخ إسماعيل صادق العدوي"},
   mosque: {ar:"مسجد الإمام الجعفري بالدراسة"},
-  women: {ar:"مصلى السيدات"},
+  women: {ar:"مصلى السيدات - مسجد الإمام الجعفري بالدراسة"},
   dah: {ar:"مضيفة و ساحة الشيخ سعيد عمران الدح بالدراسة"},
-  ahbab: {ar:"ملتقى الأحباب"},
+  ahbab: {ar:"ملتقى الأحباب - بيت طلبة باهانج، أول السابع، مدينة نصر"},
   azhar: {ar:"الجامع الأزهر"},
   naeem: {ar:"روضة النعيم", en:"Rawdhat Alnaeem"},
   jawi: {ar:"رواق الجاوي", en:"Pusat Pengajian Ruwaq Jawi"},  
@@ -355,13 +352,7 @@ const classes = [
     venue:"mosque", note:"",
     alias:"",
     source:"https://www.facebook.com/share/p/19ntB8qrsw/" },
-  { date:"2026-11-02", time:"14:00",
-    title:"قراءة وشرح كتاب تفسير الإمام النسفي",
-    subject:"التفسير",
-    teacher:"د. شعبان محمد عطية",
-    venue:"", note:"",
-    alias:"",
-    source:"https://www.facebook.com/share/p/19JYeMgxfU/" },
+
   { date:"2026-11-02", time:"18:00",
     title:"قراءة وشرح كتاب المعين الحصيف على علم التصريف",
     subject:"الصرف",
@@ -769,14 +760,14 @@ const classes = [
     venue:"azhar", note:"",
     alias:"الأشباه والنظائر السيوطي القواعد الفقهية",
     source:"https://www.facebook.com/share/p/19Up13Kn2B/" },
-  { date:"2026-11-03", time:"12:00",
+  { date:"2026-11-03", time:"بعد صلاة الظهر",
     title:"تفسير الجلالين",
     subject:"التفسير",
     teacher:"الشيخ عبد العزيز الشهاوي",
     venue:"azhar", note:"",
     alias:"تفسير الجلالين التفسير",
     source:"https://www.facebook.com/share/p/19Up13Kn2B/" },
-  { date:"2026-11-03", time:"12:00",
+  { date:"2026-11-03", time:"بعد صلاة الظهر",
     title:"التسهيل لعلوم التنزيل لابن جزي الكلبي",
     subject:"التفسير",
     teacher:"أ.د. سامي عبد الفتاح هلال",
@@ -900,7 +891,7 @@ const classes = [
     venue:"azhar", note:"",
     alias:"الكشف عن وجوه القراءات السبع وعللها وحججها القراءات",
     source:"https://www.facebook.com/share/p/1CSHSLYodF/" },
-  { date:"2026-10-19", time:"13:00",
+  { date:"2026-10-19", time:"بعد صلاة الظهر",
     title:"تفسير الكشاف للزمخشري",
     subject:"التفسير",
     teacher:"أ.د. إبراهيم الهدهد",
@@ -1170,7 +1161,7 @@ const classes = [
     alias:"",
     source:"https://www.facebook.com/share/p/1MknDdqzYk/" },
 
-  { date:"2026-11-03", time:"17:45",
+  { date:"2026-11-03", time:"بعد المغرب مباشرة ",
     title:"تفسير الجلالين",
     subject:"التفسير",
     teacher:"باب أنجامين بن عبد الرشيد",
@@ -1823,7 +1814,6 @@ data.sort((a,b)=>a.date.localeCompare(b.date)||TIME_ORDER(a.time).localeCompare(
     if(c.date!==last){ last=c.date; html += `<div class="day">🗓️ ${fmtDate(c.date)}${c.date===today?" · วันนี้":""}</div>`; }
     const v = VENUES[c.venue] || {ar:"",th:""};
     const cancelled = c.status==="cancelled", moved = c.status==="moved";
-    const msg = encodeURIComponent(`السلام عليكم، أود الاستفسار عن درس "${c.title}" يوم ${c.date} الساعة ${c.time}`);
     html += `
 <article class="card">
   <div class="top">
@@ -1841,8 +1831,7 @@ data.sort((a,b)=>a.date.localeCompare(b.date)||TIME_ORDER(a.time).localeCompare(
   </div>
   ${c.note?`<div class="note">📝 <span dir="auto">${esc(c.note)}</span>${c.noteTh?`<br>${esc(c.noteTh)}`:""}</div>`:""}
   <div class="row">
-    <a class="btn main" href="https://wa.me/${CONTACT_WA}?text=${msg}" target="_blank" rel="noopener noreferrer">💬 สอบถามวอตส์แอป</a>
-    <a class="btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAP_Q)}" target="_blank" rel="noopener noreferrer">🗺️ แผนที่</a>
+        ${v.map?`<a class="btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.map)}" target="_blank" rel="noopener noreferrer">🗺️ แผนที่</a>`:""}
     ${c.source?`<a class="btn" href="${esc(c.source)}" target="_blank" rel="noopener noreferrer">🔗 โพสต์ต้นฉบับ</a>`:""}
     </div>
 </article>`;
