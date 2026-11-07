@@ -141,6 +141,8 @@ a.btn.main{background:#1f9d57;color:#fff}
           <option value="women">مصلى السيدات - مسجد الإمام الجعفري بالدراسة</option>
           <option value="dah">مضيفة و ساحة الشيخ سعيد عمران الدح بالدراسة</option>
           <option value="ahbab">ملتقى الأحباب - بيت طلبة باهانج، أول السابع، مدينة نصر</option>
+          <option value="ahbabJohor">ملتقى الأحباب - بيت طلبة جوهور، بالحي الثامن، مدينة نصر، القاهرة</option>
+          <option value="ahbabMalak">ملتقى الأحباب - ويسما سري ملاك، بالحي السابع، مدينة نصر، القاهرة</option>
           <option value="azhar">الجامع الأزهر</option>
           <option value="naeem">روضة النعيم - Rawdhat Alnaeem</option>
           <option value="jawi">Pusat Pengajian Ruwaq Jawi</option>
@@ -195,7 +197,7 @@ a.btn.main{background:#1f9d57;color:#fff}
   <div class="notice">
     ⚠️ <b>หมายเหตุ</b><br>
     • ข้อมูลรวบรวมจากโปสเตอร์ของมัฎีฟะฮ์ อาจมีการเปลี่ยนแปลง ควรสอบถามยืนยันก่อนเดินทาง<br>
-    🗓️ ข้อมูลอัปเดตล่าสุด: 6 พ.ย. 2569
+    🗓️ ข้อมูลอัปเดตล่าสุด: 7 พ.ย. 2569
   </div>
 </div>
 
@@ -222,7 +224,9 @@ const VENUES = {
   nusantara: {ar:"ساحة نوسنتارا", en:"Sahah Nusantara"},
   addariyah: {ar:"الساحة الدارية", en:"Sahah Addariyah"},
   ashraf: {ar:"مسجد الأشراف - المقطم - القاهرة"},
-  bayt: {ar:"مؤسسة البيت المحمدي للتصوف"}
+  bayt: {ar:"مؤسسة البيت المحمدي للتصوف"},
+  ahbabJohor: {ar:"ملتقى الأحباب - بيت طلبة جوهور، بالحي الثامن، مدينة نصر، القاهرة"},
+  ahbabMalak: {ar:"ملتقى الأحباب - ويسما سري ملاك، بالحي السابع، مدينة نصر، القاهرة"}
 
 };
 const classes = [
@@ -689,11 +693,11 @@ const classes = [
     prayer:true,
     source:"https://www.facebook.com/share/v/19sUjyR8xi/" },
 
-  { date:"2026-10-28", time:"15:01",
+  { date:"2026-10-28", time:"15:00",
     title:"شرح في كتاب (الفوائد المكية فيما يحتاج طلبة الشافعية)",
     subject:"الفقه",
     teacher:"الحبيب أحمد بن عبد الرحمن المقدي باعلوي الأزهري",
-    venue:"ahbab", note:"قوله :  ( وسئل الشهاب الرملي عن إطلاق الفقهاء نفيَ الجواز ...)",
+    venue:"ahbabJohor", note:"قوله :  ( وسئل الشهاب الرملي عن إطلاق الفقهاء نفيَ الجواز ...)",
     alias:"الفوائد المكية طلبة الشافعية الشهاب الرملي",
     prayer:true,
     source:"https://www.facebook.com/share/v/1D73j5jVjF/" },
@@ -702,7 +706,7 @@ const classes = [
     title:"٤ - شرح في كتاب (الياقوت النفيس) | أحكام الوضوء",
     subject:"الفقه",
     teacher:"الحبيب أحمد بن عبد الرحمن المقدي باعلوي الأزهري",
-    venue:"ahbab", note:"قوله :  ( الوضوء لغة : اسم لغسل بعض الأعضاء ... )",
+    venue:"ahbabJohor", note:"قوله :  ( الوضوء لغة : اسم لغسل بعض الأعضاء ... )",
     alias:"الياقوت النفيس أحكام الوضوء الوضوء الطهارة",
     prayer:true,
     source:"https://www.facebook.com/share/v/1TQ5VQkuhr/" },
@@ -1110,17 +1114,8 @@ const classes = [
     source:"https://www.facebook.com/share/p/1F8QkU8dsH/" },
 
   { date:"2026-10-10", time:"20:00",
-    title:"متن الورقات في أصول الفقه",
-    subject:"أصول الفقه",
-    teacher:"مرزوقي بن أحمد الأزهري الفطاني",
-    venue:"mansyiah", note:"تنبيه كتاب تيدق سديا دورواق منشية",
-    alias:"",
-    prayer:true,
-    source:"https://www.facebook.com/share/p/1EwfxES3eT/" },
-
-  { date:"2026-10-10", time:"20:00",
-    title:"نور العيون في تلخيص سيرة الأمين المأمون",
-    subject:"السيرة والشمائل",
+    title:"متن الورقات في أصول الفقه،نورالعيون في تلخيص سيرة الأمين المأمون",
+    subject:"أصول الفقه،السيرة والشمائل",
     teacher:"مرزوقي بن أحمد الأزهري الفطاني",
     venue:"mansyiah", note:"تنبيه كتاب تيدق سديا دورواق منشية",
     alias:"",
@@ -1500,6 +1495,14 @@ const classes = [
     venue:"bayt", note:"مباشرة، الدعوة عامة لجميع طلاب العلم",
     alias:"الإكليل شرح مختصر خليل الفقه المالكي محمد الأمير عطية مصطفى",
     source:"https://www.facebook.com/share/p/1CPat7tJ6G/" },
+
+{ date:"2026-10-04", time:"20:30",
+  title:"شرح سفينة النجاة مع شرحه نيل الرجاء",
+  subject:"الفقه",
+  teacher:"الحبيب أحمد بن عبد الرحمن المقدي باعلوي",
+  venue:"ahbabMalak", note:"المجلس متاح للجميع، يوم الأحد من كل أسبوع",
+  alias:"سفينة النجاة نيل الرجاء الفقه الشافعي سالم بن سمير الحضرمي الفقه",
+  source:"https://www.facebook.com/share/p/1Dd66ZVfYc/" },
 
 ];
 
